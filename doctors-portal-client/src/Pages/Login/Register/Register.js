@@ -25,6 +25,7 @@ const Register = () => {
         registerUser(loginData.email, loginData.password,loginData.name,history);
         e.preventDefault();
     }
+  
     return (
         <Container>
             <Grid container spacing={2}>

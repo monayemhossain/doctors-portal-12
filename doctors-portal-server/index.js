@@ -23,6 +23,7 @@ async function run() {
     await client.connect();
     const database = client.db("doctors_portal");
     const appointmentsCollection = database.collection("appointments");
+    const usersCollection = database.collection("users");
 
     // get method
     app.get("/appointments", async(req, res) => {
@@ -35,12 +36,36 @@ async function run() {
       res.json(appointments);
     });
 
-    // post method
+    //  appointments post method
     app.post("/appointments", async(req, res) => {
       const appointment = req.body;
       const result = await appointmentsCollection.insertOne(appointment);
       res.json(result);
     });
+
+    // users post method
+
+    app.post("/users", async(req, res) => {
+      const user = req.body;
+      const result = await usersCollection.insertOne(user);
+      res.json(result);
+    }); 
+
+      // upsert user data
+    app.put("/users", async(req, res) => {
+      const user = req.body;
+     const filter ={ email: user.email };
+     // this option instructs the method to create a document if no documents match the filter
+    const options = { upsert: true };
+    const updateDoc = {
+      $set: {user}
+    };
+
+    const result = await usersCollection.updateOne(filter, updateDoc, options);
+    res.json(result)
+    
+    });
+
   } finally {
     // await client.close();
   }
@@ -52,5 +77,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(` server is listening at http://localhost:${port}`);
+  console.log(` Server  listening at http://localhost:${port}`);
 });
